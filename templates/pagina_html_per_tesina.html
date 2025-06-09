@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vendita Spazio in GB</title>
+  <link rel="stylesheet" href="/static/css/cib-home.css">
+</head>
+
+<body>
+
+  <div class="user-bar">
+    <div class="user-info">
+      👤 utente_prova | Credito: <span id="credito">2.000,00€</span>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>Acquista Spazio Cloud</h1>
+    <label for="package">Scegli un pacchetto:</label>
+    <select id="package">
+      <option value="base">Pacchetto Base - 16.00€/mese - 150GB</option>
+      <option value="avanzato">Pacchetto Avanzato - 36.00€/mese - 350GB</option>
+      <option value="premium">Pacchetto Premium - 78.00€/mese - 700GB</option>
+    </select>
+
+    <p class="info">Tutti i dati vengono <strong>crittografati</strong> e conservati in modo <strong>sicuro</strong> nei
+      nostri server.</p>
+
+    <button onclick="aggiungiAlCarrello()">Aggiungi al carrello</button>
+
+    <div class="cart">
+      <h2>Carrello</h2>
+      <div class="cart-items" id="cart-items"></div>
+      <div class="total" id="total">Totale: 0,00€</div>
+      <div class="totale-gb" id="totale-gb">Totale GB: 0</div>
+      <button onclick="confermaAcquisto()">Conferma Acquisto</button>
+      <p class="info">l'acquisto verrà effettuato tramite il credito precedentementen caricato sul sito, <strong> grazie
+          per averci scelto </strong>. </p>
+    </div>
+
+  </div>
+
+  <script>
+    const prezzi = {
+      base: { nome: "Pacchetto Base", prezzo: 16.00, spazio: "150GB" },
+      avanzato: { nome: "Pacchetto Avanzato", prezzo: 36.00, spazio: "350GB" },
+      premium: { nome: "Pacchetto Premium", prezzo: 78.00, spazio: "700GB" }
+    };
+
+    let carrello = [];
+    let creditoUtente = 2000.00;
+
+    function aggiornaCredito() {
+      document.getElementById('credito').textContent = creditoUtente.toLocaleString('it-IT', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }) + "€";
+    }
+
+    function aggiungiAlCarrello() {
+      const selezione = document.getElementById('package').value;
+      carrello.push(prezzi[selezione]);
+      aggiornaCarrello();
+    }
+
+    function aggiornaCarrello() {
+      const carrelloDiv = document.getElementById('cart-items');
+      const totaleDiv = document.getElementById('total');
+      const totaleGbDiv = document.getElementById('totale-gb');
+      carrelloDiv.innerHTML = '';
+
+      let totalePrezzo = 0;
+      let totaleGB = 0;
+
+      carrello.forEach((item) => {
+        const elemento = document.createElement('div');
+        elemento.textContent = `${item.nome} - ${item.spazio} - ${item.prezzo.toLocaleString('it-IT', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        })}€`;
+        carrelloDiv.appendChild(elemento);
+        totalePrezzo += item.prezzo;
+
+        const gb = parseInt(item.spazio.replace("GB", ""));
+        totaleGB += gb;
+      });
+
+      totaleDiv.textContent = `Totale: ${totalePrezzo.toLocaleString('it-IT', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      })}€`;
+
+      totaleGbDiv.textContent = `Totale GB: ${totaleGB}`;
+    }
+
+    function confermaAcquisto() {
+      let totale = carrello.reduce((sum, item) => sum + item.prezzo, 0);
+      if (totale > creditoUtente) {
+        alert("Credito insufficiente per completare l'acquisto, ricaricare ilo conto.");
+        return;
+      }
+
+      creditoUtente -= totale;
+      carrello = [];
+      aggiornaCarrello();
+      aggiornaCredito();
+      alert("Acquisto completato con successo! grazie del suo acquisto.");
+    }
+
+    aggiornaCredito();
+
+  </script>
+
+</body>
+
+</html>
